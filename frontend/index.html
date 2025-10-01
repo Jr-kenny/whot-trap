@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="WHOT Game Dashboard - Track live game and trap information in real time.">
+  <title>WHOT Game Dashboard</title>
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="style.css">
+  <script type="module" src="app.js" defer></script>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header class="main-header">
+      <h1>WHOT Game Dashboard</h1>
+    </header>
+
+    <!-- Dashboard Cards -->
+    <main>
+      <section class="cards" aria-label="Game and Trap Information">
+        
+        <!-- Game Info Card -->
+        <article class="card" id="game-info" aria-labelledby="game-info-title">
+          <h2 id="game-info-title">Game Info</h2>
+          <p>Game ID: <span id="game-id">Loading...</span></p>
+          <p>Players Joined: <span id="players">Loading...</span></p>
+          <p>Status: <span id="status">Loading...</span></p>
+        </article>
+
+        <!-- Trap Info Card -->
+        <article class="card" id="trap-info" aria-labelledby="trap-info-title">
+          <h2 id="trap-info-title">Trap Info</h2>
+          <p>Active: <span id="trap-active">Loading...</span></p>
+          <p>Response: <span id="trap-response">Loading...</span></p>
+        </article>
+
+      </section>
+
+      <!-- Actions -->
+      <section class="actions" aria-label="User Actions">
+        <button id="refresh" type="button" class="btn btn-primary">🔄 Refresh Data</button>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+      <p>&copy; <span id="year"></span> WHOT Game Dashboard. All rights reserved.</p>
+    </footer>
+  </div>
+
+  <script>
+    // Auto-update footer year
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>

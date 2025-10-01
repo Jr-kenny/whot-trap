@@ -1,0 +1,9 @@
+# Node dependencies
+node_modules/
+# Build artifacts
+out/
+build/
+# Environment files (private keys, secrets)
+.env
+*.key
+*.pem
