@@ -1,61 +1,21 @@
-# Whot Trap Project
+# Whot Trap
+i created a trad game called whot on the hoodi testnet every rules is hosted on its contract " 0x68c7a00A968Ba627921CD2885ac906DF56F96ABb"
+i then designed and implemented whot trap " 0xd5dcdfb129baf1ae2a2b73252202a03aedf9006d", a custom Drosera Trap contract tailored to the whot game 
+its functions are like admins, it enforces game-specific rules and fairness at the smart contract layer, making sure no participant can bypass the rules even if the frontend is compromised.
 
-A smart contract-based trap implementation connected to a public Whot game contract. This project demonstrates integration between a Whot game on the Ethereum Hoodi testnet and a custom trap that monitors game state and player activity.
+How it Works
 
-## Overview
+Rule Enforcement: WhotTrap intercepts all player actions (e.g., starting a game, playing a card, drawing) and validates them against the whot game official rules.
 
-- **Whot Game Contract**: A deployed Whot game smart contract that manages players, games, and moves.
-- **Trap Contract**: Monitors the Whot game contract and provides structured data to authorized operators.
-- **Frontend**: Simple web interface to interact with the trap and display relevant game information.
+Turn Validation: It makes sure that players only move during their turn, eliminating the risk of double moves or skipping.
 
-## Features
+Card Logic: kinda enforces card-matching rules (number or shape), and special card effects (e.g., “Pick Two”, “Hold On”, “Suspension”).
 
-- Real-time monitoring of Whot game activity.
-- Ability to query game state, such as:
-  - Number of active players
-  - Last played moves
-  - Game status (active/inactive)
-- Trap configuration supports whitelisted operator addresses.
-- Fully deployed on the Hoodi testnet.
+Game Integrity: Any action that violates the games rules is automatically rejected, preserving fairness.
 
-
-This repository demonstrates how to integrate a Trap with a Whot game contract on Hoodi Ethereum.
-
-It is designed to be used as a **reference template** for the Drosera team or community to replicate the setup.
-
-## Quick Start
-
-1. **Clone the repo**
+so its basically a refreee for the game 
 
 ```bash
-git clone <repo-url>
-cd drosera-whot
-Install dependencies
-
-bash
-Copy code
-bun install
-Compile Contracts
-
-bash
-Copy code
-forge build
-Deploy Whot Game Contract (if not already deployed)
-
-bash
-Copy code
-forge create src/WhotTrap.sol:WhotTrap --rpc-url <hoodi-rpc> --private-key <your-private-key> --broadcast
-Deploy Trap Contract
-
-bash
-Copy code
-forge create src/Trap.sol:Trap --rpc-url <hoodi-rpc> --private-key <your-private-key> --broadcast
-Configure Trap
-
-Edit drosera.toml (or equivalent) to point to your deployed WhotTrap and trap contract addresses, then set whitelisted operators:
-
-toml
-Copy code
 [traps.whottrap]
 path = "out/Trap.sol/Trap.json"
 response_contract = "<WhotTrap_Contract_Address>"
@@ -65,24 +25,5 @@ min_number_of_operators = 1
 max_number_of_operators = 2
 block_sample_size = 1
 private_trap = true
-whitelist = [
-    "0x3AB368340a092480a870473fA453Aa818BeAeb5f",
-    "0x26c1625785F9998A799c6a76F66391e6be9EE290"
-]
-Dry Run
-
-Test that the trap is functioning:
-
-bash
-Copy code
-drosera dryrun
-Frontend (Optional)
-
-The frontend/ folder contains a minimal interface.
-
-To host locally:
-
-bash
-Copy code
-cd frontend
-bun dev
+whitelist = []
+```
