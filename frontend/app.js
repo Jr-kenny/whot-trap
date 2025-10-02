@@ -1,62 +1,88 @@
 import { ethers } from "https://cdn.jsdelivr.net/npm/ethers@6.7.0/dist/ethers.min.js";
 
-const CONTRACT_ADDRESS = "0xd5dcdfb129BAf1Ae2A2b73252202a03AEDf9006D"; // your deployed Whot contract
+const CONTRACT_ADDRESS = "0xd5dcdfb129BAf1Ae2A2b73252202a03AEDf9006D"; // deployed WhotTrap
 const ABI = [
-  {
-    "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-    "name": "games",
-    "outputs": [
-      { "internalType": "address", "name": "creator", "type": "address" },
-      { "internalType": "uint8", "name": "playersJoined", "type": "uint8" },
-      { "internalType": "uint8", "name": "maxPlayers", "type": "uint8" },
-      { "internalType": "bool", "name": "started", "type": "bool" },
-      { "internalType": "bool", "name": "ended", "type": "bool" }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "gameCount",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-    "stateMutability": "view",
-    "type": "function"
-  }
+  "function games(uint256) view returns (uint256 id, address creator, uint8 playersJoined, uint8 maxPlayers, bool active)"
 ];
 
-let provider, contract;
+// Hoodi Testnet details
+const HOODI_CHAIN_ID = "0x88D70"; // hex of 560048
+const HOODI_PARAMS = {
+  chainId: HOODI_CHAIN_ID,
+  chainName: "Ethereum Hoodi Testnet",
+  rpcUrls: ["https://ethereum-hoodi-rpc.publicnode.com"],
+  nativeCurrency: {
+    name: "HoodiETH",
+    symbol: "ETH",
+    decimals: 18,
+  },
+  blockExplorerUrls: ["https://hoodi.etherscan.io"],
+};
 
-async function init() {
-  provider = new ethers.JsonRpcProvider("https://rpc.hoodi.xyz"); // replace with correct Hoodi RPC
-  contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, provider);
+let provider, signer, whot;
 
+async function connectWallet() {
+  if (!window.ethereum) {
+    alert("MetaMask not found! Install it to continue.");
+    return;
+  }
+
+  // Switch/Add Hoodi network
+  try {
+    await window.ethereum.request({
+      method: "wallet_switchEthereumChain",
+      params: [{ chainId: HOODI_CHAIN_ID }],
+    });
+  } catch (switchError) {
+    // Add if missing
+    if (switchError.code === 4902) {
+      await window.ethereum.request({
+        method: "wallet_addEthereumChain",
+        params: [HOODI_PARAMS],
+      });
+    } else {
+      console.error("Switch network error:", switchError);
+      return;
+    }
+  }
+
+  // Request accounts
+  await window.ethereum.request({ method: "eth_requestAccounts" });
+
+  provider = new ethers.BrowserProvider(window.ethereum);
+  signer = await provider.getSigner();
+  whot = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
+
+  console.log("Wallet connected:", await signer.getAddress());
   loadGames();
 }
 
 async function loadGames() {
   try {
-    const count = await contract.gameCount();
-    const total = Number(count);
+    const container = document.getElementById("games");
+    container.innerHTML = "";
 
-    const gamesContainer = document.getElementById("games");
-    gamesContainer.innerHTML = "";
-
-    for (let i = 1; i <= total; i++) {
-      const game = await contract.games(i);
-
-      const div = document.createElement("div");
-      div.className = "game-card";
-      div.innerHTML = `
-        <h3>Game #${i}</h3>
-        <p><b>Creator:</b> ${game.creator}</p>
-        <p><b>Players Joined:</b> ${game.playersJoined}/${game.maxPlayers}</p>
-        <p><b>Status:</b> ${game.started ? (game.ended ? "Ended" : "Ongoing") : "Not Started"}</p>
-      `;
-      gamesContainer.appendChild(div);
+    for (let i = 0; i < 5; i++) {
+      try {
+        const game = await whot.games(i);
+        if (game.active) {
+          const div = document.createElement("div");
+          div.className = "game-card";
+          div.innerHTML = `
+            <h3>Game #${game.id}</h3>
+            <p>Creator: ${game.creator}</p>
+            <p>Players: ${game.playersJoined}/${game.maxPlayers}</p>
+          `;
+          container.appendChild(div);
+        }
+      } catch {
+        // skip if game doesn't exist
+      }
     }
   } catch (err) {
     console.error("loadGame err:", err);
+    alert("Failed to load games: " + err.message);
   }
 }
 
-init();
+window.addEventListener("load", connectWallet);
