@@ -1,57 +1,114 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="WHOT Game Dashboard - Track live game and trap information in real time.">
-  <title>WHOT Game Dashboard</title>
-  <link rel="icon" href="favicon.ico" type="image/x-icon">
-  <link rel="stylesheet" href="style.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Whot — Live Game</title>
+  <link rel="stylesheet" href="style.css" />
   <script type="module" src="app.js" defer></script>
 </head>
 <body>
-  <div class="container">
-    <!-- Header -->
-    <header class="main-header">
-      <h1>WHOT Game Dashboard</h1>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">WHOT — Live</div>
+      <div class="controls">
+        <button id="connectBtn" class="btn outline">Connect Wallet</button>
+        <button id="refreshBtn" class="btn">Refresh</button>
+      </div>
     </header>
 
-    <!-- Dashboard Cards -->
-    <main>
-      <section class="cards" aria-label="Game and Trap Information">
-        
-        <!-- Game Info Card -->
-        <article class="card" id="game-info" aria-labelledby="game-info-title">
-          <h2 id="game-info-title">Game Info</h2>
-          <p>Game ID: <span id="game-id">Loading...</span></p>
-          <p>Players Joined: <span id="players">Loading...</span></p>
-          <p>Status: <span id="status">Loading...</span></p>
-        </article>
+    <main class="main-grid">
+      <aside class="left-panel card">
+        <h3>Game Controls</h3>
+        <div class="form-row">
+          <label>Game ID</label>
+          <input id="gameIdInput" placeholder="Latest or enter ID" />
+        </div>
+        <div class="form-row">
+          <label>Max players</label>
+          <input id="maxPlayers" type="number" min="2" max="8" value="4" />
+        </div>
+        <div class="btn-row">
+          <button id="createGameBtn" class="btn">Create Game</button>
+          <button id="joinGameBtn" class="btn outline">Join</button>
+          <button id="startGameBtn" class="btn outline">Start</button>
+        </div>
 
-        <!-- Trap Info Card -->
-        <article class="card" id="trap-info" aria-labelledby="trap-info-title">
-          <h2 id="trap-info-title">Trap Info</h2>
-          <p>Active: <span id="trap-active">Loading...</span></p>
-          <p>Response: <span id="trap-response">Loading...</span></p>
-        </article>
+        <hr/>
 
+        <h3>Player Actions</h3>
+        <div class="hand-actions">
+          <div class="card-selector">
+            <label>Pick Card</label>
+            <div id="hand" class="hand"></div>
+          </div>
+
+          <div class="play-controls">
+            <label>Selected</label>
+            <div id="selectedCard" class="selected">none</div>
+            <button id="playCardBtn" class="btn">Play Card</button>
+            <button id="drawBtn" class="btn outline">Draw</button>
+            <button id="declareLastBtn" class="btn outline">Declare Last</button>
+            <button id="declareSemiLastBtn" class="btn outline">Declare Semi-last</button>
+          </div>
+        </div>
+      </aside>
+
+      <section class="board card">
+        <div class="board-top">
+          <div class="players-row" id="playersRow"></div>
+        </div>
+
+        <div class="play-area">
+          <div class="deck" id="deck">
+            <div class="deck-label">Deck</div>
+            <div class="card back"></div>
+            <div class="deck-count" id="deckCount">—</div>
+          </div>
+
+          <div class="pile" id="pile">
+            <div class="pile-label">Play Pile</div>
+            <div id="topCard" class="card big">—</div>
+            <div id="pileMeta" class="pile-meta">—</div>
+          </div>
+
+          <div class="trap-card card small" id="trapCard">
+            <h4>Trap</h4>
+            <div id="trapStatus">Loading…</div>
+            <div id="trapPayload" class="muted small">—</div>
+          </div>
+        </div>
+
+        <div class="log card" id="logCard">
+          <h3>Game Log</h3>
+          <div id="logList" class="log-list"></div>
+        </div>
       </section>
 
-      <!-- Actions -->
-      <section class="actions" aria-label="User Actions">
-        <button id="refresh" type="button" class="btn btn-primary">🔄 Refresh Data</button>
-      </section>
+      <aside class="right-panel card">
+        <h3>Contract Info</h3>
+        <p><strong>Whot:</strong> <a id="whotAddr" target="_blank" rel="noopener"></a></p>
+        <p><strong>Trap:</strong> <a id="trapAddr" target="_blank" rel="noopener"></a></p>
+
+        <hr/>
+
+        <h3>Quick Actions</h3>
+        <div class="btn-col">
+          <button id="viewLatestBtn" class="btn">View Latest Game</button>
+          <button id="dryrunBtn" class="btn outline" disabled>Dry-run (CLI)</button>
+        </div>
+
+        <hr/>
+
+        <h3>Status</h3>
+        <div id="statusBox" class="status-box">Ready</div>
+      </aside>
     </main>
 
-    <!-- Footer -->
-    <footer class="main-footer">
-      <p>&copy; <span id="year"></span> WHOT Game Dashboard. All rights reserved.</p>
+    <footer class="footer">
+      <span>WHOT — Drosera integration</span>
+      <span id="version">UI v1</span>
     </footer>
   </div>
-
-  <script>
-    // Auto-update footer year
-    document.getElementById("year").textContent = new Date().getFullYear();
-  </script>
 </body>
 </html>
